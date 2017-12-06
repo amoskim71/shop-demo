@@ -12,6 +12,8 @@ import kotlinx.html.*
 import kotlinx.html.dom.*
 
 fun Application.main() {
+    StockRepository.setStock(Item.A, 20)
+    StockRepository.setStock(Item.B, 10)
     install(DefaultHeaders)
     install(CallLogging)
     install(Routing) {
@@ -25,7 +27,7 @@ fun Application.main() {
                     p {
                         ul {
                             Item.values().map {
-                                li {+it.label}
+                                li {+"${it.label}: ${StockRepository.stockOf(it).qty} left"}
                             }
                         }
                     }

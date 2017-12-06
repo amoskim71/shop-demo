@@ -9,13 +9,13 @@ import shop.main
 
 class ShopAppTest {
     @Test
-    fun `should support two kind of items`() = withTestApplication(Application::main) {
+    fun `should support two kind of items with initial stock of 20 and 10`() = withTestApplication(Application::main) {
         // when:
         with (handleRequest(HttpMethod.Get, "/")) {
             // then:
             assertEquals(HttpStatusCode.OK, response.status())
-            assertTrue(response.content?.contains("Item A") == true)
-            assertTrue(response.content?.contains("Item B") == true)
+            assertTrue(response.content?.contains("Item A: 20 left")!!)
+            assertTrue(response.content?.contains("Item B: 10 left")!!)
         }
     }
 }
