@@ -1,34 +1,35 @@
 package shop
 
-import io.ktor.html.each
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicInteger
-
-data class Stock (val item: Item) {
-    var qty: Int = 0
-}
 
 object StockRepository {
-    private val items = ConcurrentHashMap<Item, Stock>()
+    private val items = ConcurrentHashMap<Item, Int>()
 
     init {
-        Item.values().forEach {
-            items[it] = Stock(it)
-        }
+        resetStock(0)
     }
 
-    fun stockOf(item: Item): Stock {
-        return items[item]!!
+    fun stockOf(item: Item): Int {
+        return items.getOrDefault(item, 0)
     }
 
-    fun setStock(item: Item, initialStock: Int) {
-        items[item]!!.qty = initialStock
+    fun setStock(item: Item, qty: Int) {
+        items.put(item, qty)
     }
 
     fun resetStock(initialStock: Int) {
         Item.values().forEach {
             setStock(it, initialStock)
+        }
+    }
+
+    fun sell(item: Item, qty: Int) {
+        items.merge(item, qty) { prev, new ->
+            if (new <= prev) {
+                prev - new
+            } else {
+                throw IllegalArgumentException("Not enough ${item.label} stock. Is: ${prev}, needed: ${new}.")
+            }
         }
     }
 }
